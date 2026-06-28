@@ -1,0 +1,27 @@
+{
+  "name": "Real Estate Net Sheet – Arelys Catena",
+  "short_name": "Net Sheet",
+  "description": "Quickly estimate seller net proceeds and generate a ready-to-share PDF — by Arelys Catena.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f7f4ef",
+  "theme_color": "#b11f4b",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity", "utilities"],
+  "screenshots": []
+}

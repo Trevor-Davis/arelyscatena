@@ -4,6 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Real Estate Net Sheet</title>
+
+  <!-- PWA: Web App Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- PWA: iOS / Safari -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Net Sheet">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <!-- PWA: Android / Chrome theme color -->
+  <meta name="theme-color" content="#b11f4b" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#fd8ea1" media="(prefers-color-scheme: dark)">
+
+  <!-- PWA: General -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Net Sheet">
+  <meta name="description" content="Quickly estimate seller net proceeds and generate a ready-to-share PDF — by Arelys Catena.">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <script>
     (() => {
       const param = new URLSearchParams(window.location.search).get("scoutTheme");
@@ -1054,6 +1073,22 @@
     form.elements.closingDate.value = "";
     initializeCurrencyFields();
     render();
+  </script>
+
+  <!-- PWA: Register Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("./sw.js", { scope: "./" })
+          .then((reg) => {
+            console.log("[PWA] Service worker registered:", reg.scope);
+          })
+          .catch((err) => {
+            console.warn("[PWA] Service worker registration failed:", err);
+          });
+      });
+    }
   </script>
 </body>
 </html>
