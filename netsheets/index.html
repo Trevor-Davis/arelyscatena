@@ -1,0 +1,1059 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Estate Net Sheet</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+      --cp-logo-bg: #ffffff;
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+      --cp-logo-bg: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.4;
+    }
+
+    .app {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .brand {
+      display: grid;
+      gap: 14px;
+      flex: 1;
+      max-width: calc((100% - 16px) * 0.54);
+    }
+
+    .brand-logo {
+      width: 100%;
+      height: auto;
+      max-height: 220px;
+      object-fit: contain;
+      border-radius: 0.625rem;
+      background: var(--cp-logo-bg);
+      border: 1px solid var(--cp-border);
+      padding: 16px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(1.7rem, 6vw, 2.5rem);
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      color: var(--cp-text-muted);
+      margin-top: 6px;
+      max-width: 720px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 0.85fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .card,
+    .sheet {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: var(--cp-shadow);
+    }
+
+    .card {
+      overflow: hidden;
+    }
+
+    .card h2 {
+      padding: 16px;
+      background: var(--cp-surface-soft);
+      border-bottom: 1px solid var(--cp-border);
+      font-size: 1rem;
+    }
+
+    .section {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--cp-text-muted);
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+
+    .lookup-status {
+      min-height: 16px;
+      color: var(--cp-text-soft);
+      font-size: 0.76rem;
+      font-weight: 500;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .span-2 {
+      grid-column: 1 / -1;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--cp-border-strong);
+      border-radius: 0.625rem;
+      background: var(--cp-bg-elevated);
+      color: var(--cp-text);
+      font: inherit;
+      padding: 10px 12px;
+    }
+
+    input:focus,
+    select:focus {
+      outline: 2px solid var(--cp-accent);
+      outline-offset: 1px;
+    }
+
+    .input-suffix {
+      position: relative;
+      display: block;
+    }
+
+    .input-suffix input {
+      padding-right: 34px;
+    }
+
+    .input-suffix span {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--cp-text-muted);
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    .actions {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--cp-panel-strong);
+      border-top: 1px solid var(--cp-border);
+    }
+
+    .pdf-options {
+      padding: 14px 16px;
+      border-top: 1px solid var(--cp-border);
+      background: var(--cp-surface-soft);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: var(--cp-text);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .checkbox-row input {
+      width: 20px;
+      min-height: 20px;
+      margin-top: 1px;
+      accent-color: var(--cp-accent);
+    }
+
+    .checkbox-row span {
+      display: grid;
+      gap: 2px;
+    }
+
+    .checkbox-row small {
+      color: var(--cp-text-muted);
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    button {
+      min-height: 44px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface-soft);
+      color: var(--cp-text);
+      font: inherit;
+      font-weight: 700;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    button.primary {
+      background: var(--cp-success);
+      color: var(--cp-accent-fg);
+      border-color: var(--cp-success);
+      flex: 1;
+    }
+
+    button.primary:hover {
+      background: var(--cp-success);
+      opacity: 0.92;
+    }
+
+    .sheet {
+      padding: 22px;
+      position: sticky;
+      top: 16px;
+    }
+
+    .sheet-header {
+      border-bottom: 2px solid var(--cp-border-strong);
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+    }
+
+    .sheet-header h2 {
+      font-size: 1.45rem;
+    }
+
+    .sheet-meta {
+      display: grid;
+      gap: 4px;
+      margin-top: 8px;
+      color: var(--cp-text-muted);
+      font-size: 0.9rem;
+    }
+
+    .summary-total {
+      display: grid;
+      gap: 4px;
+      padding: 16px;
+      border-radius: 16px;
+      background: var(--cp-surface-soft);
+      border: 1px solid var(--cp-success);
+      margin: 16px 0;
+    }
+
+    .summary-total.negative {
+      border-color: var(--cp-danger);
+    }
+
+    .summary-total span {
+      color: var(--cp-text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+    }
+
+    .summary-total strong {
+      color: var(--cp-success);
+      font-size: clamp(2rem, 8vw, 3.2rem);
+      line-height: 1;
+      letter-spacing: -0.06em;
+    }
+
+    .summary-total.negative strong {
+      color: var(--cp-danger);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.93rem;
+    }
+
+    th {
+      text-align: left;
+      color: var(--cp-text-muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--cp-border);
+    }
+
+    td {
+      padding: 9px 0;
+      border-bottom: 1px solid var(--cp-border);
+      vertical-align: top;
+    }
+
+    td:last-child,
+    th:last-child {
+      text-align: right;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .credit {
+      color: var(--cp-success);
+    }
+
+    .debit {
+      color: var(--cp-danger);
+    }
+
+    .note {
+      color: var(--cp-text-muted);
+      font-size: 0.78rem;
+      margin-top: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--cp-border);
+      background: var(--cp-surface-soft);
+      border-radius: 0.625rem;
+      padding: 8px 10px;
+      color: var(--cp-text-muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 860px) {
+      .app {
+        padding: 14px;
+      }
+
+      header {
+        display: grid;
+      }
+
+      .brand {
+        max-width: none;
+      }
+
+      .layout,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sheet {
+        position: static;
+      }
+    }
+
+    @media print {
+      body {
+        background: var(--cp-surface);
+      }
+
+      .app {
+        max-width: none;
+        padding: 0;
+      }
+
+      header,
+      .card,
+      .actions {
+        display: none;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .sheet {
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        position: static;
+      }
+
+      .summary-total {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand">
+        <div>
+          <h1>Real Estate Net Sheet</h1>
+          <p class="subtitle">Create a seller proceeds estimate on your phone, then tap Generate PDF to download a ready-to-share PDF.</p>
+        </div>
+        <img class="brand-logo" src="catena-logo.png" alt="Catena logo">
+      </div>
+      <span class="pill">Mobile PDF generator</span>
+    </header>
+
+    <div class="layout">
+      <form class="card" id="netSheetForm">
+        <h2>Property Details</h2>
+        <div class="section grid">
+          <label class="span-2">Street address
+            <input name="street" type="text" value="" autocomplete="street-address">
+          </label>
+          <label>ZIP code
+            <input name="zip" id="zipInput" type="text" inputmode="numeric" maxlength="10" value="" autocomplete="postal-code">
+            <span class="sr-only" id="zipLookupStatus" aria-live="polite"></span>
+          </label>
+          <label>City
+            <input name="city" type="text" value="" autocomplete="address-level2">
+          </label>
+          <label>State
+            <input name="state" type="text" maxlength="2" value="" autocomplete="address-level1">
+          </label>
+          <label>County
+            <input name="county" type="text" value="">
+          </label>
+          <label>Prepared for
+            <input name="client" type="text" value="">
+          </label>
+          <label>Prepared by
+            <input name="preparedBy" type="text" value="Arelys Catena">
+          </label>
+          <label>Estimated closing date
+            <input name="closingDate" type="date">
+          </label>
+        </div>
+
+        <h2>Sale Price and Payoffs</h2>
+        <div class="section grid">
+          <label>Estimated sale price
+            <input name="salePrice" type="text" inputmode="decimal" value="0" data-currency>
+          </label>
+          <label>First mortgage payoff
+            <input name="mortgage1" type="text" inputmode="decimal" value="0" data-currency>
+          </label>
+          <label>Seller concessions / credits
+            <input name="sellerCredits" type="text" inputmode="decimal" value="0" data-currency>
+          </label>
+          <label>Second mortgage / HELOC payoff
+            <input name="mortgage2" type="text" inputmode="decimal" value="0" data-currency>
+          </label>
+        </div>
+
+        <h2>Commission and Closing Costs</h2>
+        <div class="section grid">
+          <label>Listing agent commission %
+            <span class="input-suffix"><input name="listingPct" type="number" inputmode="decimal" min="0" step="0.1" value="0"><span>%</span></span>
+          </label>
+          <label>Buyer agent commission %
+            <span class="input-suffix"><input name="buyerPct" type="number" inputmode="decimal" min="0" step="0.1" value="0"><span>%</span></span>
+          </label>
+          <label>Other broker/admin fee
+            <input name="brokerFee" type="text" inputmode="decimal" value="0" data-currency>
+          </label>
+          <label>Doc stamps / transfer tax %
+            <span class="input-suffix"><input name="transferTaxPct" type="number" inputmode="decimal" min="0" step="0.001" value="0"><span>%</span></span>
+          </label>
+          <label>Settlement Closing Fees / Lien Search
+            <input name="settlementFee" type="text" inputmode="decimal" value="1800" data-currency>
+          </label>
+        </div>
+
+        <h2>Prorations</h2>
+        <div class="section grid">
+          <label>Annual property taxes
+            <input name="annualTaxes" type="text" inputmode="decimal" value="0" data-currency>
+          </label>
+          <label>Taxes already paid?
+            <select name="taxesPaid">
+              <option value="no">No - seller owes proration</option>
+              <option value="yes">Yes - seller gets credit</option>
+            </select>
+          </label>
+          <label>Annual HOA / condo dues
+            <input name="annualHoa" type="text" inputmode="decimal" value="0" data-currency>
+          </label>
+          <label>HOA dues already paid?
+            <select name="hoaPaid">
+              <option value="no">No - seller owes proration</option>
+              <option value="yes">Yes - seller gets credit</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="pdf-options">
+          <label class="checkbox-row">
+            <input name="includeDetails" type="checkbox">
+            <span>
+              Include detailed inputs as page 2
+              <small>Adds every entered assumption and cost input to the PDF.</small>
+            </span>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button class="primary" type="button" id="printButton">Generate PDF</button>
+          <button type="reset">Reset</button>
+        </div>
+      </form>
+
+      <section class="sheet" id="pdfSheet" aria-live="polite">
+        <div class="sheet-header">
+          <h2>Seller Net Sheet</h2>
+          <div class="sheet-meta">
+            <div><strong>Property:</strong> <span data-out="address"></span></div>
+            <div><strong>County:</strong> <span data-out="county"></span></div>
+            <div><strong>Prepared for:</strong> <span data-out="client"></span></div>
+            <div><strong>Prepared by:</strong> <span data-out="preparedBy"></span></div>
+            <div><strong>Estimated closing date:</strong> <span data-out="closingDate"></span></div>
+          </div>
+        </div>
+
+        <div class="summary-total" id="netProceedsCard">
+          <span>Estimated net proceeds</span>
+          <strong data-money="netProceeds"></strong>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Line item</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody id="summaryRows"></tbody>
+        </table>
+
+        <p class="note">This seller net sheet is an estimate for planning purposes only. Actual closing costs, taxes, prorations, loan payoffs, association fees, and broker compensation may vary. Confirm all figures with the purchase contract, lender payoff statement, title/settlement provider, and applicable local requirements.</p>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById("netSheetForm");
+    const rows = document.getElementById("summaryRows");
+    const zipInput = document.getElementById("zipInput");
+    const zipLookupStatus = document.getElementById("zipLookupStatus");
+    let zipLookupTimer;
+    let zipLookupController;
+    const moneyFormatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0
+    });
+    const dateFormatter = new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    });
+    const pdfLogo = {
+      path: "catena-logo-pdf.jpg",
+      width: 480,
+      height: 180
+    };
+    const floridaDocStampRates = new Map([
+      ["alachua", 0.7], ["baker", 0.7], ["bay", 0.7], ["bradford", 0.7], ["brevard", 0.7],
+      ["broward", 0.7], ["calhoun", 0.7], ["charlotte", 0.7], ["citrus", 0.7], ["clay", 0.7],
+      ["collier", 0.7], ["columbia", 0.7], ["desoto", 0.7], ["dixie", 0.7], ["duval", 0.7],
+      ["escambia", 0.7], ["flagler", 0.7], ["franklin", 0.7], ["gadsden", 0.7], ["gilchrist", 0.7],
+      ["glades", 0.7], ["gulf", 0.7], ["hamilton", 0.7], ["hardee", 0.7], ["hendry", 0.7],
+      ["hernando", 0.7], ["highlands", 0.7], ["hillsborough", 0.7], ["holmes", 0.7],
+      ["indianriver", 0.7], ["jackson", 0.7], ["jefferson", 0.7], ["lafayette", 0.7],
+      ["lake", 0.7], ["lee", 0.7], ["leon", 0.7], ["levy", 0.7], ["liberty", 0.7],
+      ["madison", 0.7], ["manatee", 0.7], ["marion", 0.7], ["martin", 0.7],
+      ["miamidade", 0.6], ["monroe", 0.7], ["nassau", 0.7], ["okaloosa", 0.7],
+      ["okeechobee", 0.7], ["orange", 0.7], ["osceola", 0.7], ["palmbeach", 0.7],
+      ["pasco", 0.7], ["pinellas", 0.7], ["polk", 0.7], ["putnam", 0.7],
+      ["santarosa", 0.7], ["sarasota", 0.7], ["seminole", 0.7], ["stjohns", 0.7],
+      ["stlucie", 0.7], ["sumter", 0.7], ["suwannee", 0.7], ["taylor", 0.7],
+      ["union", 0.7], ["volusia", 0.7], ["wakulla", 0.7], ["walton", 0.7], ["washington", 0.7]
+    ]);
+
+    function value(name) {
+      const field = form.elements[name];
+      return Number.parseFloat(String(field.value).replace(/[^0-9.-]/g, "")) || 0;
+    }
+
+    function text(name) {
+      const field = form.elements[name];
+      return field.value.trim();
+    }
+
+    function composeAddress() {
+      const parts = [
+        text("street"),
+        [text("city"), text("state")].filter(Boolean).join(", "),
+        text("zip")
+      ].filter(Boolean);
+      return parts.join(" ");
+    }
+
+    function formatMoney(amount) {
+      if (Math.abs(amount) < 0.5) return moneyFormatter.format(0);
+      return moneyFormatter.format(Math.round(amount));
+    }
+
+    function normalizeCounty(county) {
+      return county.toLowerCase().replace(/\bcounty\b/g, "").replace(/[^a-z0-9]/g, "");
+    }
+
+    function updateDocStampRate() {
+      const zip = text("zip").replace(/\D/g, "").slice(0, 5);
+      const state = text("state").toUpperCase();
+      const rate = floridaDocStampRates.get(normalizeCounty(text("county")));
+      form.elements.transferTaxPct.value = zip.length === 5 && state !== "FL" ? 0 : (rate ?? 0);
+    }
+
+    function formatCurrencyField(field) {
+      field.value = formatMoney(value(field.name));
+    }
+
+    function initializeCurrencyFields() {
+      form.querySelectorAll("[data-currency]").forEach((field) => formatCurrencyField(field));
+    }
+
+    function closingDate() {
+      const raw = text("closingDate");
+      if (!raw) return null;
+      const date = new Date(`${raw}T12:00:00`);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function dayOfYear(date) {
+      const start = new Date(date.getFullYear(), 0, 0);
+      return Math.floor((date - start) / 86400000);
+    }
+
+    function calculate() {
+      const salePrice = value("salePrice");
+      const mortgagePayoffs = value("mortgage1") + value("mortgage2");
+      const commissions = salePrice * ((value("listingPct") + value("buyerPct")) / 100) + value("brokerFee");
+      const sellerCredits = value("sellerCredits");
+      const transferTaxes = salePrice * (value("transferTaxPct") / 100);
+      const settlementFees = value("settlementFee");
+      const close = closingDate();
+      const elapsedDays = close ? dayOfYear(close) : 0;
+      const taxProration = (value("annualTaxes") / 365) * elapsedDays * (form.elements.taxesPaid.value === "yes" ? -1 : 1);
+      const hoaProration = (value("annualHoa") / 365) * elapsedDays * (form.elements.hoaPaid.value === "yes" ? -1 : 1);
+      const debits = mortgagePayoffs + commissions + sellerCredits + transferTaxes + settlementFees + taxProration + hoaProration;
+      const netProceeds = salePrice - debits;
+
+      return {
+        salePrice,
+        mortgagePayoffs,
+        commissions,
+        sellerCredits,
+        transferTaxes,
+        settlementFees,
+        taxProration,
+        hoaProration,
+        netProceeds,
+        close
+      };
+    }
+
+    function summaryItems(calc) {
+      return [
+        ["Estimated sale price", calc.salePrice, "credit"],
+        ["Mortgage Payoffs", -calc.mortgagePayoffs, "debit"],
+        ["Broker commissions", -calc.commissions, "debit"],
+        ["Seller concessions / credits", -calc.sellerCredits, "debit"],
+        ["Transfer taxes / doc stamps", -calc.transferTaxes, "debit"],
+        ["Settlement Closing Fees / Lien Search", -calc.settlementFees, "debit"],
+        ["Tax proration", -calc.taxProration, calc.taxProration < 0 ? "credit" : "debit"],
+        ["HOA proration", -calc.hoaProration, calc.hoaProration < 0 ? "credit" : "debit"]
+      ];
+    }
+
+    function render() {
+      const calc = calculate();
+      document.querySelector('[data-out="address"]').textContent = composeAddress() || "Not provided";
+      document.querySelector('[data-out="county"]').textContent = text("county") || "Not provided";
+      document.querySelector('[data-out="client"]').textContent = text("client") || "Not provided";
+      document.querySelector('[data-out="preparedBy"]').textContent = text("preparedBy") || "Not provided";
+      document.querySelector('[data-out="closingDate"]').textContent = calc.close ? dateFormatter.format(calc.close) : "Not provided";
+      const netProceedsCard = document.getElementById("netProceedsCard");
+      document.querySelector('[data-money="netProceeds"]').textContent = formatMoney(calc.netProceeds);
+      netProceedsCard.classList.toggle("negative", calc.netProceeds < 0);
+
+      rows.replaceChildren(...summaryItems(calc).map(([label, amount, tone]) => {
+        const tr = document.createElement("tr");
+        const name = document.createElement("td");
+        const val = document.createElement("td");
+        name.textContent = label;
+        val.textContent = formatMoney(amount);
+        val.className = tone;
+        tr.append(name, val);
+        return tr;
+      }));
+    }
+
+    function pdfText(value) {
+      return String(value).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+    }
+
+    function truncate(value, maxLength) {
+      const stringValue = String(value);
+      return stringValue.length > maxLength ? `${stringValue.slice(0, maxLength - 3)}...` : stringValue;
+    }
+
+    function detailInputItems() {
+      return [
+        ["Street address", text("street") || "Not provided"],
+        ["City", text("city") || "Not provided"],
+        ["State", text("state") || "Not provided"],
+        ["ZIP code", text("zip") || "Not provided"],
+        ["County", text("county") || "Not provided"],
+        ["Prepared for", text("client") || "Not provided"],
+        ["Prepared by", text("preparedBy") || "Not provided"],
+        ["Estimated closing date", closingDate() ? dateFormatter.format(closingDate()) : "Not provided"],
+        ["Estimated sale price", formatMoney(value("salePrice"))],
+        ["First mortgage payoff", formatMoney(value("mortgage1"))],
+        ["Second mortgage / HELOC payoff", formatMoney(value("mortgage2"))],
+        ["Seller concessions / credits", formatMoney(value("sellerCredits"))],
+        ["Listing agent commission %", `${value("listingPct").toFixed(2)}%`],
+        ["Buyer agent commission %", `${value("buyerPct").toFixed(2)}%`],
+        ["Other broker/admin fee", formatMoney(value("brokerFee"))],
+        ["Doc stamps / transfer tax %", `${value("transferTaxPct").toFixed(3)}%`],
+        ["Settlement Closing Fees / Lien Search", formatMoney(value("settlementFee"))],
+        ["Annual property taxes", formatMoney(value("annualTaxes"))],
+        ["Taxes already paid?", form.elements.taxesPaid.value === "yes" ? "Yes" : "No"],
+        ["Annual HOA / condo dues", formatMoney(value("annualHoa"))],
+        ["HOA dues already paid?", form.elements.hoaPaid.value === "yes" ? "Yes" : "No"]
+      ];
+    }
+
+    function bytesToBinary(bytes) {
+      let binary = "";
+      bytes.forEach((byte) => {
+        binary += String.fromCharCode(byte);
+      });
+      return binary;
+    }
+
+    function binaryToBytes(binary) {
+      const bytes = new Uint8Array(binary.length);
+      for (let index = 0; index < binary.length; index += 1) {
+        bytes[index] = binary.charCodeAt(index) & 255;
+      }
+      return bytes;
+    }
+
+    async function loadPdfLogo() {
+      try {
+        const response = await fetch(pdfLogo.path);
+        if (!response.ok) return null;
+        return bytesToBinary(new Uint8Array(await response.arrayBuffer()));
+      } catch {
+        return null;
+      }
+    }
+
+    function buildPdfDocument(logoBinary = null) {
+      const calc = calculate();
+      const address = composeAddress() || "Not provided";
+      const county = text("county") || "Not provided";
+      const preparedBy = text("preparedBy") || "Not provided";
+      const preparedFor = text("client") || "Not provided";
+      const closing = calc.close ? dateFormatter.format(calc.close) : "Not provided";
+      const proceedsTone = calc.netProceeds < 0 ? "0.55 0.04 0.04" : "0.04 0.35 0.16";
+      const proceedsFill = calc.netProceeds < 0 ? "1.00 0.90 0.90" : "0.90 0.98 0.92";
+      const brandTone = "0.42 0.07 0.13";
+      const includeDetails = form.elements.includeDetails.checked;
+      const pageOne = [];
+
+      function line(content, value, x, y, size = 10, color = "0.14 0.14 0.14", font = "F1") {
+        content.push(`${color} rg BT /${font} ${size} Tf ${x} ${y} Td (${pdfText(value)}) Tj ET`);
+      }
+
+      function rule(content, y) {
+        content.push(`0.57 0.57 0.57 RG 50 ${y} m 562 ${y} l S`);
+      }
+
+      function logo(content, x, y, width, height) {
+        if (logoBinary) content.push(`q ${width} 0 0 ${height} ${x} ${y} cm /Logo Do Q`);
+      }
+
+      function pdfHeader(content, title) {
+        line(content, title, 50, 720, 22, brandTone);
+        logo(content, 247, 624, 315, 118);
+        line(content, `Property: ${truncate(address, 44)}`, 50, 695, 10, brandTone);
+        line(content, `Prepared for: ${truncate(preparedFor, 48)}`, 50, 679, 10, "0.36 0.36 0.36");
+        line(content, `Prepared by: ${truncate(preparedBy, 48)}`, 50, 663, 10, "0.36 0.36 0.36");
+        line(content, `Estimated closing date: ${closing}`, 50, 647, 10, "0.36 0.36 0.36");
+        rule(content, 626);
+      }
+
+      pdfHeader(pageOne, "Seller Net Sheet");
+
+      pageOne.push(`${proceedsFill} rg 50 574 512 50 re f`);
+      line(pageOne, "Estimated Net Proceeds", 66, 606, 10, proceedsTone);
+      line(pageOne, formatMoney(calc.netProceeds), 66, 582, 24, proceedsTone);
+
+      line(pageOne, "Amount", 482, 545, 10, "0.36 0.36 0.36", "F2");
+      rule(pageOne, 536);
+
+      let y = 516;
+      summaryItems(calc).forEach(([label, amount, tone]) => {
+        const color = tone === "credit" ? "0.09 0.64 0.29" : "0.86 0.15 0.15";
+        line(pageOne, label, 50, y, 10);
+        line(pageOne, formatMoney(amount), 480, y, 10, color);
+        y -= 22;
+      });
+
+      rule(pageOne, y + 8);
+      line(pageOne, "Disclaimer", 50, y - 18, 10, "0.36 0.36 0.36");
+      [
+        "This seller net sheet is an estimate for planning purposes only. Actual closing costs, taxes, prorations, loan payoffs,",
+        "association fees, and broker compensation may vary. Confirm all figures with the purchase contract, lender payoff",
+        "statement, title/settlement provider, and applicable local requirements before relying on this estimate."
+      ].forEach((value, index) => line(pageOne, value, 50, y - 38 - (index * 14), 8, "0.36 0.36 0.36"));
+
+      const streams = [pageOne.join("\n")];
+      if (includeDetails) {
+        const pageTwo = [];
+        pdfHeader(pageTwo, "Detailed Inputs");
+        let detailY = 598;
+        detailInputItems().forEach(([label, value]) => {
+          if (detailY < 70) return;
+          line(pageTwo, truncate(label, 36), 50, detailY, 9, "0.36 0.36 0.36");
+          line(pageTwo, truncate(value, 54), 265, detailY, 9);
+          detailY -= 20;
+        });
+        streams.push(pageTwo.join("\n"));
+      }
+
+      const pageCount = streams.length;
+      const fontObjectId = 3;
+      const boldFontObjectId = 4;
+      const imageObjectId = logoBinary ? 5 : null;
+      const firstPageObjectId = logoBinary ? 6 : 5;
+      const pageObjectIds = streams.map((_, index) => firstPageObjectId + index);
+      const contentObjectIds = streams.map((_, index) => firstPageObjectId + pageCount + index);
+      const objects = [
+        "<< /Type /Catalog /Pages 2 0 R >>",
+        `<< /Type /Pages /Kids [${pageObjectIds.map((id) => `${id} 0 R`).join(" ")}] /Count ${pageCount} >>`,
+        "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>"
+      ];
+      if (logoBinary) {
+        objects.push(`<< /Type /XObject /Subtype /Image /Width ${pdfLogo.width} /Height ${pdfLogo.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${logoBinary.length} >>\nstream\n${logoBinary}\nendstream`);
+      }
+      streams.forEach((_, index) => {
+        const xobject = logoBinary ? ` /XObject << /Logo ${imageObjectId} 0 R >>` : "";
+        objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 ${fontObjectId} 0 R /F2 ${boldFontObjectId} 0 R >>${xobject} >> /Contents ${contentObjectIds[index]} 0 R >>`);
+      });
+      streams.forEach((stream) => {
+        objects.push(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+      });
+      let pdf = "%PDF-1.4\n";
+      const offsets = [0];
+      objects.forEach((object, index) => {
+        offsets.push(pdf.length);
+        pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+      });
+      const xref = pdf.length;
+      pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+      offsets.slice(1).forEach((offset) => {
+        pdf += `${String(offset).padStart(10, "0")} 00000 n \n`;
+      });
+      pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+      return binaryToBytes(pdf);
+    }
+
+    async function generatePdf() {
+      render();
+      const blob = new Blob([buildPdfDocument(await loadPdfLogo())], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const zip = text("zip") || "net-sheet";
+      link.href = url;
+      link.download = `real-estate-net-sheet-${zip}.pdf`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function lookupZip() {
+      const zip = text("zip").replace(/\D/g, "").slice(0, 5);
+      window.clearTimeout(zipLookupTimer);
+      if (zipLookupController) zipLookupController.abort();
+
+      if (zip.length < 5) {
+        zipLookupStatus.textContent = "Enter a 5-digit ZIP code to auto-fill city and state.";
+        updateDocStampRate();
+        return;
+      }
+
+      zipLookupTimer = window.setTimeout(async () => {
+        zipLookupController = new AbortController();
+        zipLookupStatus.textContent = "Looking up ZIP code...";
+        try {
+          const response = await fetch(`https://api.zippopotam.us/us/${zip}`, {
+            signal: zipLookupController.signal,
+            headers: { "Accept": "application/json" }
+          });
+          if (!response.ok) throw new Error("ZIP lookup failed");
+          const data = await response.json();
+          const place = data.places && data.places[0];
+          if (!place) throw new Error("ZIP lookup returned no city");
+          form.elements.city.value = place["place name"] || "";
+          form.elements.state.value = place["state abbreviation"] || "";
+          form.elements.county.value = "";
+          if (place.latitude && place.longitude) {
+            try {
+              const params = new URLSearchParams({
+                format: "jsonv2",
+                lat: place.latitude,
+                lon: place.longitude,
+                addressdetails: "1"
+              });
+              const countyResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?${params}`, {
+                signal: zipLookupController.signal,
+                headers: { "Accept": "application/json" }
+              });
+              if (countyResponse.ok) {
+                const countyData = await countyResponse.json();
+                form.elements.county.value = (countyData.address && countyData.address.county) || "";
+              }
+            } catch (error) {
+              if (error.name === "AbortError") return;
+            }
+          }
+          zipLookupStatus.textContent = form.elements.county.value
+            ? `Auto-filled ${form.elements.city.value}, ${form.elements.state.value}, ${form.elements.county.value}.`
+            : `Auto-filled ${form.elements.city.value}, ${form.elements.state.value}. Enter county manually if needed.`;
+          updateDocStampRate();
+          render();
+        } catch (error) {
+          if (error.name === "AbortError") return;
+          form.elements.transferTaxPct.value = 0;
+          zipLookupStatus.textContent = "ZIP lookup unavailable. You can still enter city and state manually.";
+          render();
+        }
+      }, 350);
+    }
+
+    form.addEventListener("input", (event) => {
+      if (["county", "state", "zip"].includes(event.target.name)) updateDocStampRate();
+      render();
+    });
+    form.addEventListener("change", (event) => {
+      if (["county", "state", "zip"].includes(event.target.name)) updateDocStampRate();
+      render();
+    });
+    form.addEventListener("reset", () => {
+      setTimeout(() => {
+        form.elements.closingDate.value = "";
+        initializeCurrencyFields();
+        render();
+      }, 0);
+    });
+    document.getElementById("printButton").addEventListener("click", () => {
+      generatePdf();
+    });
+    zipInput.addEventListener("input", lookupZip);
+    form.querySelectorAll("[data-currency]").forEach((field) => {
+      field.addEventListener("blur", () => formatCurrencyField(field));
+      field.addEventListener("focus", () => field.select());
+    });
+
+    form.elements.closingDate.value = "";
+    initializeCurrencyFields();
+    render();
+  </script>
+</body>
+</html>
